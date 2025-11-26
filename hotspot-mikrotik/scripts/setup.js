@@ -1,12 +1,16 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
 const Plan = require('../src/models/Plan');
-const Hotspot = require('../models/Hotspot');
-const User = require('../src/models/User');
+const Hotspot = require('../src/models/Hotspot');
 
 async function setupDatabase() {
   try {
     console.log('🔗 Conectando a MongoDB...');
+    
+    if (!process.env.MONGODB_URI) {
+      throw new Error('MONGODB_URI no está definida en .env');
+    }
+    
     await mongoose.connect(process.env.MONGODB_URI);
     console.log('✅ Conectado a MongoDB');
 
@@ -18,7 +22,7 @@ async function setupDatabase() {
         days: 1,
         price: 100,
         speedLimit: '10M/10M',
-        dataLimit: 0, // Ilimitado
+        dataLimit: 0,
         isActive: true
       },
       {
@@ -70,7 +74,7 @@ async function setupDatabase() {
         ip: '192.168.88.1',
         username: 'admin',
         password: 'password',
-        secret: 'miclave_secreta',
+        secret: 'miclave_secreta_hotspot',
         location: 'Oficina Central',
         maxUsers: 50,
         isActive: true
@@ -80,12 +84,12 @@ async function setupDatabase() {
 
     console.log('\n🎉 Configuración inicial completada!');
     console.log(`📊 ${plansCreated} planes creados`);
-    console.log('🔧 Recuerda configurar las variables de entorno en .env');
+    console.log('🔧 Recuerda configurar las variables de entorno en Render');
     console.log('🚀 Ejecuta "npm start" para iniciar el servidor');
     
     process.exit(0);
   } catch (error) {
-    console.error('❌ Error en la configuración:', error);
+    console.error('❌ Error en la configuración:', error.message);
     process.exit(1);
   }
 }
