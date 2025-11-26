@@ -10,9 +10,9 @@ const hotspotSchema = new mongoose.Schema({
   location: String,
   isActive: { type: Boolean, default: true },
   maxUsers: { type: Number, default: 50 },
-  currentUsers: { type: Number, default: 0 },
-  createdAt: { type: Date, default: Date.now },
-  lastSync: Date
+  currentUsers: { type: Number, default: 0 }
+}, {
+  timestamps: true
 });
 
 module.exports = mongoose.model('Hotspot', hotspotSchema);
