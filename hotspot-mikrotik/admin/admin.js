@@ -1,9 +1,10 @@
-const AdminJS = require('adminjs');
+const { AdminJS } = require('adminjs');
 const AdminJSExpress = require('@adminjs/express');
 const AdminJSMongoose = require('@adminjs/mongoose');
 const mongoose = require('mongoose');
 
-AdminJS.registerAdapter(AdminJSMongoose);
+// Registrar el adaptador de Mongoose CORREGIDO para v7
+AdminJSMongoose.Adapter.init(AdminJS);
 
 const User = require('../src/models/User');
 const Payment = require('../src/models/Payment');
@@ -75,46 +76,57 @@ const adminOptions = {
   },
   dashboard: {
     handler: async () => {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      
-      const totalUsers = await User.countDocuments();
-      const todayPayments = await Payment.aggregate([
-        { 
-          $match: { 
-            status: 'approved',
-            createdAt: { $gte: today }
-          } 
-        },
-        { 
-          $group: { 
-            _id: null, 
-            total: { $sum: '$amount' },
-            count: { $sum: 1 }
-          } 
-        }
-      ]);
-      
-      const activeHotspots = await Hotspot.countDocuments({ isActive: true });
-      const totalRevenue = await Payment.aggregate([
-        { $match: { status: 'approved' } },
-        { $group: { _id: null, total: { $sum: '$amount' } } }
-      ]);
+      try {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        const totalUsers = await User.countDocuments();
+        const todayPayments = await Payment.aggregate([
+          { 
+            $match: { 
+              status: 'approved',
+              createdAt: { $gte: today }
+            } 
+          },
+          { 
+            $group: { 
+              _id: null, 
+              total: { $sum: '$amount' },
+              count: { $sum: 1 }
+            } 
+          }
+        ]);
+        
+        const activeHotspots = await Hotspot.countDocuments({ isActive: true });
+        const totalRevenue = await Payment.aggregate([
+          { $match: { status: 'approved' } },
+          { $group: { _id: null, total: { $sum: '$amount' } } }
+        ]);
 
-      return {
-        totalUsers,
-        todayRevenue: todayPayments[0]?.total || 0,
-        todayPayments: todayPayments[0]?.count || 0,
-        activeHotspots,
-        totalRevenue: totalRevenue[0]?.total || 0
-      };
-    },
-    component: AdminJS.bundle('./components/Dashboard')
+        return {
+          totalUsers,
+          todayRevenue: todayPayments[0]?.total || 0,
+          todayPayments: todayPayments[0]?.count || 0,
+          activeHotspots,
+          totalRevenue: totalRevenue[0]?.total || 0
+        };
+      } catch (error) {
+        console.error('Error en dashboard handler:', error);
+        return {
+          totalUsers: 0,
+          todayRevenue: 0,
+          todayPayments: 0,
+          activeHotspots: 0,
+          totalRevenue: 0
+        };
+      }
+    }
   }
 };
 
 const admin = new AdminJS(adminOptions);
 
+// Configuración de autenticación para AdminJS
 const adminRouter = AdminJSExpress.buildAuthenticatedRouter(admin, {
   authenticate: async (email, password) => {
     if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
@@ -122,7 +134,8 @@ const adminRouter = AdminJSExpress.buildAuthenticatedRouter(admin, {
     }
     return null;
   },
-  cookiePassword: process.env.ADMIN_COOKIE_SECRET
+  cookiePassword: process.env.ADMIN_COOKIE_SECRET || 'fallback-cookie-secret-hotspot',
+  maxAge: 24 * 60 * 60 * 1000 // 24 horas
 });
 
 module.exports = { admin, adminRouter };
