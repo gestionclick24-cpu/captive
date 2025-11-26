@@ -13,9 +13,9 @@ const paymentSchema = new mongoose.Schema({
     default: 'pending'
   },
   paymentMethod: String,
-  paymentDate: Date,
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now }
+  paymentDate: Date
+}, {
+  timestamps: true
 });
 
 paymentSchema.index({ userId: 1 });
