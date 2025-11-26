@@ -4,7 +4,7 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-// Google Auth
+// Google Auth - Simple y confiable
 router.get('/google',
   passport.authenticate('google', { scope: ['profile', 'email'] })
 );
@@ -25,44 +25,6 @@ router.get('/google/callback',
       res.redirect(`/auth/success?token=${token}&user=${encodeURIComponent(req.user.name)}`);
     } catch (error) {
       console.error('❌ Error en Google callback:', error);
-      res.redirect('/?error=auth_failed');
-    }
-  }
-);
-
-// Apple Auth - RUTAS CORREGIDAS
-router.get('/apple',
-  (req, res, next) => {
-    if (!process.env.APPLE_CLIENT_ID) {
-      return res.redirect('/?error=apple_not_configured');
-    }
-    passport.authenticate('apple', {
-      scope: ['name', 'email']
-    })(req, res, next);
-  }
-);
-
-router.post('/apple/callback',
-  (req, res, next) => {
-    if (!process.env.APPLE_CLIENT_ID) {
-      return res.redirect('/?error=apple_not_configured');
-    }
-    passport.authenticate('apple', { 
-      failureRedirect: '/?error=auth_failed',
-      failureMessage: true 
-    })(req, res, next);
-  },
-  (req, res) => {
-    try {
-      const token = jwt.sign(
-        { userId: req.user._id }, 
-        process.env.JWT_SECRET, 
-        { expiresIn: '7d' }
-      );
-      console.log(`✅ Apple auth exitosa para usuario: ${req.user.email}`);
-      res.redirect(`/auth/success?token=${token}&user=${encodeURIComponent(req.user.name)}`);
-    } catch (error) {
-      console.error('❌ Error en Apple callback:', error);
       res.redirect('/?error=auth_failed');
     }
   }
@@ -210,7 +172,7 @@ router.get('/health', (req, res) => {
   res.json({
     success: true,
     google: !!process.env.GOOGLE_CLIENT_ID,
-    apple: !!process.env.APPLE_CLIENT_ID,
+    apple: false,
     timestamp: new Date()
   });
 });
