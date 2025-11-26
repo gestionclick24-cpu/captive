@@ -14,13 +14,13 @@
     "passport": "^0.6.0",
     "passport-google-oauth20": "^2.0.0",
     
-    // VERSIÓN CORRECTA DE PASSPORT-APPLE
+ 
     "passport-apple": "^1.1.1",
     
     "mercadopago": "^1.5.17",
     "routeros-client": "^0.6.0",
     
-    // ADMINJS ACTUALIZADO
+
     "adminjs": "^7.0.0",
     "@adminjs/express": "^5.0.0",
     "@adminjs/mongoose": "^3.0.0",
@@ -41,3 +41,4 @@
   "author": "Tu Nombre",
   "license": "PROPIETARY"
 }
+
