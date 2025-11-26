@@ -17,7 +17,7 @@
     "mercadopago": "^1.5.17",
     "routeros-client": "^0.6.0",
     
-    // ADMINJS ACTUALIZADO - NOV 2024
+
     "adminjs": "^7.0.0",
     "@adminjs/express": "^5.0.0",
     "@adminjs/mongoose": "^3.0.0",
@@ -38,3 +38,4 @@
   "author": "Tu Nombre",
   "license": "PROPIETARY"
 }
+
