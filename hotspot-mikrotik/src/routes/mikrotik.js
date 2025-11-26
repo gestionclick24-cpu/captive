@@ -3,12 +3,12 @@ const router = express.Router();
 const mikrotikManager = require('../utils/mikrotikManager');
 const Hotspot = require('../models/Hotspot');
 const User = require('../models/User');
-const auth = require('../middleware/auth');
+const { auth } = require('../middleware/auth');
 
 // Conectar usuario a hotspot
 router.post('/connect', auth, async (req, res) => {
   try {
-    const { hotspotId, planId } = req.body;
+    const { hotspotId } = req.body;
     const user = req.user;
 
     // Verificar que el usuario tenga créditos
@@ -37,7 +37,7 @@ router.post('/connect', auth, async (req, res) => {
       username, 
       password, 
       'default', 
-      '1d' // 1 día de acceso
+      '1d'
     );
 
     // Restar crédito al usuario
@@ -66,6 +66,7 @@ router.post('/connect', auth, async (req, res) => {
     });
 
   } catch (error) {
+    console.error('Error en conexión hotspot:', error);
     res.status(500).json({
       success: false,
       message: error.message
@@ -84,23 +85,7 @@ router.get('/hotspots', auth, async (req, res) => {
       hotspots
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
-});
-
-// Sincronizar estado de hotspot (admin)
-router.post('/sync/:hotspotId', auth, async (req, res) => {
-  try {
-    const userCount = await mikrotikManager.syncHotspotUsers(req.params.hotspotId);
-    
-    res.json({
-      success: true,
-      userCount
-    });
-  } catch (error) {
+    console.error('Error obteniendo hotspots:', error);
     res.status(500).json({
       success: false,
       message: error.message
