@@ -2,12 +2,10 @@ class HotspotApp {
     constructor() {
         this.token = localStorage.getItem('hotspot_token');
         this.user = null;
-        this.appleAvailable = false;
         this.init();
     }
 
     async init() {
-        await this.checkAppleAvailability();
         this.setupEventListeners();
         
         if (this.token) {
@@ -17,30 +15,10 @@ class HotspotApp {
         }
     }
 
-    async checkAppleAvailability() {
-        try {
-            const response = await fetch('/auth/health');
-            const data = await response.json();
-            this.appleAvailable = data.apple;
-            
-            if (this.appleAvailable) {
-                document.getElementById('apple-auth').classList.remove('hidden');
-            }
-        } catch (error) {
-            console.log('Apple auth no disponible');
-            document.getElementById('apple-auth').classList.add('hidden');
-        }
-    }
-
     setupEventListeners() {
         // Botón de Google Auth
         document.getElementById('google-auth').addEventListener('click', () => {
             this.openAuthWindow('/auth/google');
-        });
-
-        // Botón de Apple Auth
-        document.getElementById('apple-auth').addEventListener('click', () => {
-            this.openAuthWindow('/auth/apple');
         });
 
         // Botones de navegación
@@ -75,8 +53,6 @@ class HotspotApp {
 
         if (error === 'auth_failed') {
             this.showMessage('Error en la autenticación. Intenta nuevamente.', 'error');
-        } else if (error === 'apple_not_configured') {
-            this.showMessage('Apple Sign-In no está configurado en este momento.', 'info');
         } else if (error === 'no_token') {
             this.showMessage('Error en el proceso de autenticación.', 'error');
         }
