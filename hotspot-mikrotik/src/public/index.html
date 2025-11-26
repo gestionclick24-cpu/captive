@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotspot WiFi</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌐 Hotspot WiFi</h1>
+            <p>Conectate con tus redes sociales</p>
+        </header>
+
+        <main>
+            <div id="user-info" class="hidden">
+                <div class="user-card">
+                    <h3>¡Hola, <span id="user-name"></span>!</h3>
+                    <p>Créditos disponibles: <span id="user-credits">0</span></p>
+                    <button id="logout-btn" class="btn btn-secondary">Cerrar Sesión</button>
+                </div>
+            </div>
+
+            <div id="auth-section">
+                <div class="auth-card">
+                    <h2>Iniciar Sesión</h2>
+                    <button id="google-auth" class="btn btn-google">
+                        🚀 Continuar con Google
+                    </button>
+                    <button id="apple-auth" class="btn btn-apple">
+                        🍎 Continuar con Apple
+                    </button>
+                </div>
+            </div>
+
+            <div id="hotspots-section" class="hidden">
+                <h2>Hotspots Disponibles</h2>
+                <div id="hotspots-list"></div>
+            </div>
+
+            <div id="plans-section" class="hidden">
+                <h2>Planes Disponibles</h2>
+                <div id="plans-list"></div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Soporte: soporte@tudominio.com</p>
+        </footer>
+    </div>
+
+    <script src="/js/main.js"></script>
+</body>
+</html>

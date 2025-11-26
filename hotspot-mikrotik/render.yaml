@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: hotspot-mikrotik
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        fromDatabase:
+          name: hotspot-db
+          property: connectionString
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ADMIN_COOKIE_SECRET
+        generateValue: true
+
+databases:
+  - name: hotspot-db
+    plan: free
+    databaseName: hotspot
+    ipAllowList: []
