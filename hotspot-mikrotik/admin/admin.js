@@ -1,10 +1,10 @@
-const { AdminJS } = require('adminjs');
+const AdminJS = require('adminjs');
 const AdminJSExpress = require('@adminjs/express');
 const AdminJSMongoose = require('@adminjs/mongoose');
 const mongoose = require('mongoose');
 
-// Registrar el adaptador de Mongoose CORREGIDO para v7
-AdminJSMongoose.Adapter.init(AdminJS);
+// Registrar el adaptador de Mongoose para v5
+AdminJS.registerAdapter(AdminJSMongoose);
 
 const User = require('../src/models/User');
 const Payment = require('../src/models/Payment');
@@ -63,65 +63,9 @@ const adminOptions = {
   ],
   branding: {
     companyName: 'Hotspot MikroTik Admin',
-    logo: false,
-    theme: {
-      colors: {
-        primary100: '#1e40af',
-        primary80: '#1e40af',
-        primary60: '#1e40af',
-        primary40: '#1e40af',
-        primary20: '#1e40af',
-      }
-    }
+    logo: false
   },
-  dashboard: {
-    handler: async () => {
-      try {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        
-        const totalUsers = await User.countDocuments();
-        const todayPayments = await Payment.aggregate([
-          { 
-            $match: { 
-              status: 'approved',
-              createdAt: { $gte: today }
-            } 
-          },
-          { 
-            $group: { 
-              _id: null, 
-              total: { $sum: '$amount' },
-              count: { $sum: 1 }
-            } 
-          }
-        ]);
-        
-        const activeHotspots = await Hotspot.countDocuments({ isActive: true });
-        const totalRevenue = await Payment.aggregate([
-          { $match: { status: 'approved' } },
-          { $group: { _id: null, total: { $sum: '$amount' } } }
-        ]);
-
-        return {
-          totalUsers,
-          todayRevenue: todayPayments[0]?.total || 0,
-          todayPayments: todayPayments[0]?.count || 0,
-          activeHotspots,
-          totalRevenue: totalRevenue[0]?.total || 0
-        };
-      } catch (error) {
-        console.error('Error en dashboard handler:', error);
-        return {
-          totalUsers: 0,
-          todayRevenue: 0,
-          todayPayments: 0,
-          activeHotspots: 0,
-          totalRevenue: 0
-        };
-      }
-    }
-  }
+  rootPath: '/admin'
 };
 
 const admin = new AdminJS(adminOptions);
@@ -134,7 +78,7 @@ const adminRouter = AdminJSExpress.buildAuthenticatedRouter(admin, {
     }
     return null;
   },
-  cookiePassword: process.env.ADMIN_COOKIE_SECRET || 'fallback-cookie-secret-hotspot',
+  cookiePassword: process.env.ADMIN_COOKIE_SECRET || 'fallback-cookie-secret-hotspot-2024',
   maxAge: 24 * 60 * 60 * 1000 // 24 horas
 });
 
